@@ -14,6 +14,7 @@ public class UserService {
     private UserRepository userRepository;
 
     public User register(User user) {
+        user.setId(null); // Ensure UUID is auto-generated
         return userRepository.save(user);
     }
 
