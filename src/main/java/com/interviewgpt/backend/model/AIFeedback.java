@@ -22,8 +22,10 @@ public class AIFeedback {
     @JoinColumn(name = "answer_id", nullable = false)
     private UserAnswer answer;
 
+    @Lob
     private String feedbackText;
 
+    @Lob
     private String followUpQuestion;
 
     private int rating;

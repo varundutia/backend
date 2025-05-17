@@ -5,6 +5,7 @@ import com.interviewgpt.backend.repository.*;
 import com.interviewgpt.backend.service.UserAnswerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.util.*;
 
@@ -17,8 +18,8 @@ public class AnswerController {
     @Autowired private UserAnswerService answerService;
 
     @PostMapping("/submit")
-    public AIFeedback submitAnswer(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
+    public AIFeedback submitAnswer(@RequestBody Map<String, String> request, Authentication authentication) {
+        String email = authentication.getName();
         UUID questionId = UUID.fromString(request.get("questionId"));
         String answerText = request.get("answerText");
 
@@ -26,6 +27,10 @@ public class AnswerController {
         InterviewQuestion question = questionRepo.findById(questionId).orElseThrow();
 
         UserAnswer answer = answerService.saveAnswer(user, question, answerText);
-        return answerService.generateLiveFeedback(answer);
+        long start = System.currentTimeMillis();
+        AIFeedback feedback = answerService.generateLiveFeedback(answer);
+        long duration = System.currentTimeMillis() - start;
+        System.out.println("⏱️ Time taken for generateLiveFeedback (Redis/API): " + duration + " ms");
+        return feedback;
     }
 }
