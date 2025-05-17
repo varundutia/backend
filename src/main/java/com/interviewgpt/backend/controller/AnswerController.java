@@ -26,6 +26,6 @@ public class AnswerController {
         InterviewQuestion question = questionRepo.findById(questionId).orElseThrow();
 
         UserAnswer answer = answerService.saveAnswer(user, question, answerText);
-        return answerService.generateMockFeedback(answer);
+        return answerService.generateLiveFeedback(answer);
     }
 }

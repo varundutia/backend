@@ -23,13 +23,16 @@ public class UserAnswerService {
         return answerRepo.save(answer);
     }
 
-    public AIFeedback generateMockFeedback(UserAnswer answer) {
-        AIFeedback feedback = AIFeedback.builder()
-                .answer(answer)
-                .feedbackText("Good structure, but could add more depth.")
-                .followUpQuestion("Can you elaborate on your impact in that role?")
-                .rating(7)
-                .build();
-        return feedbackRepo.save(feedback);
-    }
+    
+    @Autowired private OpenAIService openAIService;
+    public AIFeedback generateLiveFeedback(UserAnswer answer) {
+        String response = openAIService.generateFeedback(answer.getAnswerText());
+        return feedbackRepo.save(AIFeedback.builder()
+            .answer(answer)
+            .feedbackText(response)
+            .followUpQuestion("What would you do differently next time?")
+            .rating(8) // optional static rating
+            .build());
+
+        }
 }
